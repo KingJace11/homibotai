@@ -83,7 +83,7 @@ export default function DashboardPage() {
           {["all", "interested", "unreplied"].map((filter) => (
             <button
               key={filter}
-              onClick={() => setActiveFilter(filter as any)}
+              onClick={() => setActiveFilter(filter as "all" | "interested" | "unreplied")}
               className={`px-4 py-2 rounded ${activeFilter === filter ? "bg-homi-primary text-white" : "bg-gray-200"}`}
             >
               {filter === "all" ? "All" : filter === "interested" ? "Most Interested" : "Unreplied"}
