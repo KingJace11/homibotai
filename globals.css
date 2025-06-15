@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 🌐 Global styles */
+body {
+  @apply bg-homi-light text-homi-dark font-sans antialiased;
+}

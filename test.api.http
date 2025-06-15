@@ -1,0 +1,37 @@
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+  "name": "Krista Nielsen",
+  "email": "kristalee85@gmail.com"
+}
+
+### POST a new comment
+POST http://localhost:3003/api/comments
+Content-Type: application/json
+
+{
+  "name": "Krista Nielsen",
+  "comment": "Hey, is this still available?",
+  "isInterested": true
+}
+### GET all comments
+GET http://localhost:3003/api/comments
+
+### Try creating a simple comment
+POST http://localhost:3003/api/comments
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "comment": "This is a test"
+}
+
+POST http://localhost:3003/api/comments
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "comment": "Is this still available?",
+  "isInterested": true
+}
