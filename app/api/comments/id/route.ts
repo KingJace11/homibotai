@@ -1,15 +1,15 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
+import type { NextApiRequest } from "next";
 
 export async function PATCH(
   request: NextRequest,
-  context: { params: Record<string, string> }
-) {
-  const id = context.params.id;
+  { params }: { params: { id: string } }
+): Promise<NextResponse> {
   const body = await request.json();
 
   const updatedComment = await prisma.comment.update({
-    where: { id },
+    where: { id: params.id },
     data: { repliedText: body.repliedText },
   });
 
