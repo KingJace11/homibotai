@@ -1,20 +1,17 @@
-import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
-// PATCH /api/comments/:id
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  try {
-    const body = await req.json();
-    const { repliedText } = body;
+export async function PATCH(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  const { id } = params;
+  const body = await request.json();
 
-    const updated = await prisma.comment.update({
-      where: { id: params.id },
-      data: { repliedText },
-    });
+  const updatedComment = await prisma.comment.update({
+    where: { id },
+    data: { repliedText: body.repliedText },
+  });
 
-    return NextResponse.json(updated);
-  } catch (error) {
-    console.error("❌ Error updating comment reply:", error);
-    return NextResponse.json({ error: "Failed to update comment" }, { status: 500 });
-  }
+  return NextResponse.json(updatedComment);
 }
