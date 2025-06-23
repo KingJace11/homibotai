@@ -8,9 +8,12 @@ datasource db {
 }
 
 model User {
-  id    String @id @default(cuid())
-  name  String
-  email String @unique
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  image     String?
+  comments  Comment[]
+  createdAt DateTime @default(now())
 }
 
 model Comment {
@@ -20,4 +23,6 @@ model Comment {
   timestamp    DateTime @default(now())
   isInterested Boolean  @default(false)
   repliedText  String?
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id])
 }
