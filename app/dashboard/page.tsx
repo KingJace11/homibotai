@@ -4,8 +4,6 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 
-// Step 7: Import copy-to-clipboard hook
-import { CopyToClipboard } from "react-copy-to-clipboard";
 
 // TypeScript type
 type Comment = {
@@ -61,6 +59,22 @@ export default function DashboardPage() {
       setActiveReplyId(null);
     } catch (err) {
       console.error("Error updating comment:", err);
+    }
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    if (!confirm("Are you sure you want to delete this comment?")) return;
+
+    try {
+      const res = await fetch(`/api/comments/${commentId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Failed to delete comment");
+
+      setComments((prev) => prev.filter((comment) => comment.id !== commentId));
+    } catch (err) {
+      console.error("Error deleting comment:", err);
     }
   };
 
@@ -163,12 +177,20 @@ export default function DashboardPage() {
                   <div className="absolute z-10 hidden group-hover:block bg-white border border-gray-300 p-2 text-sm text-gray-800 rounded shadow-lg w-72 -top-2 left-full ml-2">
                     Full Reply: “{comment.repliedText}”
                   </div>
-                  <CopyToClipboard text={comment.repliedText} onCopy={() => setCopied(true)}>
-                    <button className="mt-2 text-xs text-blue-500 hover:underline">
-                      📋 Copy to Clipboard
-                    </button>
-                  </CopyToClipboard>
-                  {copied && <span className="text-green-500 ml-2 text-xs">Copied!</span>}
+                  <button
+  className="mt-2 text-xs text-blue-500 hover:underline"
+  onClick={async () => {
+    if (comment.repliedText) {
+      await navigator.clipboard.writeText(comment.repliedText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  }}
+>
+  📋 Copy to Clipboard
+</button>
+{copied && <span className="text-green-500 ml-2 text-xs">Copied!</span>}
+
                 </div>
               ) : (
                 <>
@@ -202,6 +224,13 @@ export default function DashboardPage() {
                   )}
                 </>
               )}
+
+              <button
+                className="text-sm text-red-500 hover:underline mt-2"
+                onClick={() => handleDeleteComment(comment.id)}
+              >
+                🗑️ Delete
+              </button>
             </li>
           ))}
         </ul>
