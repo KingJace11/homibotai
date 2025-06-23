@@ -4,7 +4,6 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 
-
 // TypeScript type
 type Comment = {
   id: string;
@@ -22,6 +21,7 @@ export default function DashboardPage() {
   const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<"all" | "interested" | "unreplied">("all");
   const [copied, setCopied] = useState(false);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -78,9 +78,48 @@ export default function DashboardPage() {
     }
   };
 
+  const handleToggleInterested = async (commentId: string, current: boolean) => {
+    try {
+      const res = await fetch(`/api/comments/${commentId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isInterested: !current }),
+      });
+
+      if (!res.ok) throw new Error("Failed to update interest status");
+
+      const updated = await res.json();
+
+      setComments((prev) =>
+        prev.map((comment) =>
+          comment.id === commentId ? { ...comment, isInterested: updated.isInterested } : comment
+        )
+      );
+    } catch (err) {
+      console.error("Error updating interest status:", err);
+    }
+  };
+
+  const exportCSV = () => {
+    const csv = ["Name,Comment,Interested,Replied"].concat(
+      comments.map((c) =>
+        `${c.name},"${c.comment.replace(/"/g, '""')}",${c.isInterested},"${c.repliedText || ""}"
+      )
+    );
+    const blob = new Blob([csv.join("\n")], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "comments.csv";
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
   const filteredComments = comments.filter((comment) => {
-    if (activeFilter === "interested") return comment.isInterested;
-    if (activeFilter === "unreplied") return !comment.repliedText;
+    if (activeFilter === "interested" && !comment.isInterested) return false;
+    if (activeFilter === "unreplied" && comment.repliedText) return false;
+    if (!comment.name.toLowerCase().includes(search.toLowerCase()) &&
+        !comment.comment.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
 
@@ -116,23 +155,20 @@ export default function DashboardPage() {
       <section className="bg-white p-6 rounded-lg shadow-md mb-8">
         <h2 className="text-2xl font-semibold mb-4">📬 Recent Comments</h2>
 
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="bg-white p-4 rounded shadow text-center">
-            <p className="text-lg font-bold">{comments.length}</p>
-            <p className="text-sm text-gray-500">Total Comments</p>
-          </div>
-          <div className="bg-white p-4 rounded shadow text-center">
-            <p className="text-lg font-bold">
-              {comments.filter((c) => c.isInterested).length}
-            </p>
-            <p className="text-sm text-gray-500">Marked Interested</p>
-          </div>
-          <div className="bg-white p-4 rounded shadow text-center">
-            <p className="text-lg font-bold">
-              {comments.filter((c) => !c.repliedText).length}
-            </p>
-            <p className="text-sm text-gray-500">Unreplied</p>
-          </div>
+        <div className="flex gap-4 mb-4">
+          <input
+            type="text"
+            placeholder="🔍 Search..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="px-4 py-2 border rounded w-full"
+          />
+          <button
+            onClick={exportCSV}
+            className="bg-homi-primary text-white px-4 py-2 rounded hover:bg-homi-accent"
+          >
+            📤 Export CSV
+          </button>
         </div>
 
         <div className="flex gap-4 mb-4">
@@ -159,15 +195,30 @@ export default function DashboardPage() {
                 !comment.repliedText ? "border-yellow-400" : ""
               }`}
             >
-              <p className="font-semibold">{comment.name}</p>
-              <p className="text-gray-700">{comment.comment}</p>
-              <p className="text-sm text-gray-400 mb-2">
-                {format(new Date(comment.timestamp), "Pp")}
-              </p>
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="font-semibold">{comment.name}</p>
+                  <p className="text-gray-700">{comment.comment}</p>
+                  <p className="text-sm text-gray-400 mb-2">
+                    {format(new Date(comment.timestamp), "Pp")}
+                  </p>
+                </div>
+                <button
+                  className="text-sm text-red-500 hover:underline"
+                  onClick={() => handleDeleteComment(comment.id)}
+                >
+                  🗑️ Delete
+                </button>
+              </div>
 
-              {comment.isInterested && (
-                <div className="text-green-600 text-xs font-semibold">✅ Interested</div>
-              )}
+              <div className="flex items-center gap-2 mt-2">
+                <label className="text-sm text-gray-600">Interested?</label>
+                <input
+                  type="checkbox"
+                  checked={comment.isInterested}
+                  onChange={() => handleToggleInterested(comment.id, comment.isInterested)}
+                />
+              </div>
 
               {comment.repliedText ? (
                 <div className="mt-3 relative group">
@@ -178,19 +229,18 @@ export default function DashboardPage() {
                     Full Reply: “{comment.repliedText}”
                   </div>
                   <button
-  className="mt-2 text-xs text-blue-500 hover:underline"
-  onClick={async () => {
-    if (comment.repliedText) {
-      await navigator.clipboard.writeText(comment.repliedText);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  }}
->
-  📋 Copy to Clipboard
-</button>
-{copied && <span className="text-green-500 ml-2 text-xs">Copied!</span>}
-
+                    className="mt-2 text-xs text-blue-500 hover:underline"
+                    onClick={async () => {
+                      if (comment.repliedText) {
+                        await navigator.clipboard.writeText(comment.repliedText);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 2000);
+                      }
+                    }}
+                  >
+                    📋 Copy to Clipboard
+                  </button>
+                  {copied && <span className="text-green-500 ml-2 text-xs">Copied!</span>}
                 </div>
               ) : (
                 <>
@@ -224,13 +274,6 @@ export default function DashboardPage() {
                   )}
                 </>
               )}
-
-              <button
-                className="text-sm text-red-500 hover:underline mt-2"
-                onClick={() => handleDeleteComment(comment.id)}
-              >
-                🗑️ Delete
-              </button>
             </li>
           ))}
         </ul>
