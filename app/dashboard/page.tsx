@@ -172,19 +172,20 @@ export default function DashboardPage() {
         </div>
 
         <div className="flex gap-4 mb-4">
-          {["all", "interested", "unreplied"].map((filter) => (
-            <button
-              key={filter}
-              onClick={() => setActiveFilter(filter as "all" | "interested" | "unreplied")}
-              className={`px-4 py-2 rounded ${
-                activeFilter === filter
-                  ? "bg-homi-primary text-white"
-                  : "bg-gray-200 text-gray-800"
-              }`}
-            >
-              {filter === "all" ? "All" : filter === "interested" ? "Most Interested" : "Unreplied"}
-            </button>
-          ))}
+         {["all", "interested", "unreplied"].map((filter) => (
+  <button
+    key={filter}
+    onClick={() => setActiveFilter(filter as "all" | "interested" | "unreplied")}
+    className={`px-4 py-2 rounded ${
+      activeFilter === filter
+        ? "bg-homi-primary text-white"
+        : "bg-gray-200 text-gray-800"
+    }`}
+  >
+    {filter === "all" ? "All" : filter === "interested" ? "Most Interested" : "Unreplied"}
+  </button>
+))}
+
         </div>
 
         <ul className="space-y-4">
