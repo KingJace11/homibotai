@@ -1,0 +1,10 @@
+POST http://localhost:3000/api/comments
+Content-Type: application/json
+
+{
+  "name": "Krista Nielsen",
+  "comment": "Do you have any open houses this weekend?",
+  "timestamp": "2025-06-24T17:30:00Z",
+  "isInterested": true,
+  "repliedText": null
+}

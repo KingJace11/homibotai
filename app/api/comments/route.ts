@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+// GET = fetch all comments
 export async function GET() {
   try {
     const comments = await prisma.comment.findMany({
@@ -13,19 +14,21 @@ export async function GET() {
   }
 }
 
-export async function POST(req: NextRequest) {
+// POST = create a new comment
+export async function POST(req: Request) {
   try {
-    const { name, comment, isInterested } = await req.json();
-
+    const body = await req.json();
     const newComment = await prisma.comment.create({
       data: {
-        name,
-        comment,
-        isInterested,
+        name: body.name,
+        comment: body.comment,
+        timestamp: body.timestamp,
+        isInterested: body.isInterested ?? false,
+        repliedText: body.repliedText ?? null,
       },
     });
 
-    return NextResponse.json(newComment, { status: 201 });
+    return NextResponse.json(newComment);
   } catch (error) {
     console.error("Error creating comment:", error);
     return NextResponse.json({ error: "Failed to create comment" }, { status: 500 });
