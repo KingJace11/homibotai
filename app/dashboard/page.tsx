@@ -4,7 +4,6 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 
-// TypeScript type
 type Comment = {
   id: string;
   name: string;
@@ -102,8 +101,9 @@ export default function DashboardPage() {
 
   const exportCSV = () => {
     const csv = ["Name,Comment,Interested,Replied"].concat(
-      comments.map((c) =>
-        `${c.name},"${c.comment.replace(/"/g, '""')}",${c.isInterested},"${c.repliedText || ""}"
+      comments.map(
+        (c) =>
+          `${c.name},"${c.comment.replace(/"/g, '""')}",${c.isInterested},"${c.repliedText || ""}"`
       )
     );
     const blob = new Blob([csv.join("\n")], { type: "text/csv" });
@@ -118,8 +118,11 @@ export default function DashboardPage() {
   const filteredComments = comments.filter((comment) => {
     if (activeFilter === "interested" && !comment.isInterested) return false;
     if (activeFilter === "unreplied" && comment.repliedText) return false;
-    if (!comment.name.toLowerCase().includes(search.toLowerCase()) &&
-        !comment.comment.toLowerCase().includes(search.toLowerCase())) return false;
+    if (
+      !comment.name.toLowerCase().includes(search.toLowerCase()) &&
+      !comment.comment.toLowerCase().includes(search.toLowerCase())
+    )
+      return false;
     return true;
   });
 
@@ -172,20 +175,28 @@ export default function DashboardPage() {
         </div>
 
         <div className="flex gap-4 mb-4">
-         {["all", "interested", "unreplied"].map((filter) => (
-  <button
-    key={filter}
-    onClick={() => setActiveFilter(filter as "all" | "interested" | "unreplied")}
-    className={`px-4 py-2 rounded ${
-      activeFilter === filter
-        ? "bg-homi-primary text-white"
-        : "bg-gray-200 text-gray-800"
-    }`}
-  >
-    {filter === "all" ? "All" : filter === "interested" ? "Most Interested" : "Unreplied"}
-  </button>
-))}
-
+          {["all", "interested", "unreplied"].map((filter) => {
+            const isActive = activeFilter === filter;
+            return (
+              <button
+                key={filter}
+                onClick={() =>
+                  setActiveFilter(filter as "all" | "interested" | "unreplied")
+                }
+                className={`px-4 py-2 rounded ${
+                  isActive
+                    ? "bg-homi-primary text-white"
+                    : "bg-gray-200 text-gray-800"
+                }`}
+              >
+                {filter === "all"
+                  ? "All"
+                  : filter === "interested"
+                  ? "Most Interested"
+                  : "Unreplied"}
+              </button>
+            );
+          })}
         </div>
 
         <ul className="space-y-4">
@@ -217,7 +228,9 @@ export default function DashboardPage() {
                 <input
                   type="checkbox"
                   checked={comment.isInterested}
-                  onChange={() => handleToggleInterested(comment.id, comment.isInterested)}
+                  onChange={() =>
+                    handleToggleInterested(comment.id, comment.isInterested)
+                  }
                 />
               </div>
 
@@ -241,7 +254,9 @@ export default function DashboardPage() {
                   >
                     📋 Copy to Clipboard
                   </button>
-                  {copied && <span className="text-green-500 ml-2 text-xs">Copied!</span>}
+                  {copied && (
+                    <span className="text-green-500 ml-2 text-xs">Copied!</span>
+                  )}
                 </div>
               ) : (
                 <>
