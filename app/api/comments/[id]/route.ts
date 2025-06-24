@@ -1,25 +1,21 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma"; // ✅ Fix default import
 
-// PATCH = update a comment (e.g., send a reply or toggle interest)
+// PATCH = update a comment
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
     const body = await req.json();
-
     const updated = await prisma.comment.update({
-      where: { id: params.id },
+      where: { id: context.params.id },
       data: {
         repliedText: body.repliedText,
         isInterested:
-          typeof body.isInterested === "boolean"
-            ? body.isInterested
-            : undefined,
+          typeof body.isInterested === "boolean" ? body.isInterested : undefined,
       },
     });
-
     return NextResponse.json(updated);
   } catch (error) {
     console.error("Error updating comment:", error);
@@ -30,11 +26,11 @@ export async function PATCH(
 // DELETE = remove a comment
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
     await prisma.comment.delete({
-      where: { id: params.id },
+      where: { id: context.params.id },
     });
     return NextResponse.json({ message: "Comment deleted" });
   } catch (error) {
