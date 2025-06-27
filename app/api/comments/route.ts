@@ -10,7 +10,6 @@ export async function GET() {
     return NextResponse.json({ error: "Failed to fetch comments" }, { status: 500 });
   }
 }
-}
 
 // POST = create a new comment
 export async function POST(req: Request) {
