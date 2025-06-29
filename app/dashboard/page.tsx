@@ -11,8 +11,8 @@ type Comment = {
   timestamp: string;
   isInterested: boolean;
   repliedText: string | null;
+  intent: string | null; // ✅ Add this
 };
-
 export default function DashboardPage() {
   const { data: session } = useSession();
   const [comments, setComments] = useState<Comment[]>([]);
