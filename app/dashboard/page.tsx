@@ -208,13 +208,16 @@ export default function DashboardPage() {
               }`}
             >
               <div className="flex justify-between items-start">
-                <div>
-                  <p className="font-semibold">{comment.name}</p>
-                  <p className="text-gray-700">{comment.comment}</p>
-                  <p className="text-sm text-gray-400 mb-2">
-                    {format(new Date(comment.timestamp), "Pp")}
-                  </p>
-                </div>
+             <div>
+  <p className="font-semibold">{comment.name}</p>
+  <p className="text-gray-700">{comment.comment}</p>
+  <p className="text-xs italic text-gray-500">
+    Intent: {comment.intent || "N/A"}
+  </p>
+  <p className="text-sm text-gray-400 mb-2">
+    {format(new Date(comment.timestamp), "Pp")}
+  </p>
+</div>
                 <button
                   className="text-sm text-red-500 hover:underline"
                   onClick={() => handleDeleteComment(comment.id)}
