@@ -154,6 +154,73 @@ export default function DashboardPage() {
           </span>
         </div>
       </section>
+      {/* -------- Instagram Posts Placeholder Section -------- */}
+<div className="mb-6">
+  <h2 className="text-xl font-bold mb-4">📸 Recent Instagram Posts</h2>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    {[
+      {
+        id: "post1",
+        image: "/placeholder.jpg",
+        caption: "🏠 Just listed! 3 bed, 2 bath in Summerlin.",
+        timestamp: "2025-06-26T10:00:00Z",
+      },
+      {
+        id: "post2",
+        image: "/placeholder.jpg",
+        caption: "🔥 Hot property alert! DM for details.",
+        timestamp: "2025-06-25T15:30:00Z",
+      },
+    ].map((post) => (
+      <div key={post.id} className="border p-4 rounded-xl shadow-md bg-white space-y-3">
+        {/* Image */}
+        <div className="w-full h-40 bg-gray-200 rounded-md flex items-center justify-center text-gray-400 text-sm">
+          Image Placeholder
+        </div>
+
+        {/* Caption */}
+        <p className="text-md font-medium">{post.caption}</p>
+
+        {/* Timestamp */}
+        <p className="text-xs text-gray-500">
+          Posted: {new Date(post.timestamp).toLocaleString()}
+        </p>
+
+        {/* Auto-DM Toggle */}
+        <label className="flex items-center space-x-2">
+          <input type="checkbox" className="form-checkbox" />
+          <span className="text-sm">Auto-DM enabled</span>
+        </label>
+
+        {/* Link input */}
+        <div>
+          <label className="block text-sm text-gray-600 mb-1">Custom link to send:</label>
+          <input
+            type="text"
+            className="w-full p-2 border rounded-md text-sm"
+            placeholder="https://yourlisting.com/123"
+          />
+        </div>
+
+        {/* Intent Detection Toggle */}
+        <label className="flex items-center space-x-2">
+          <input type="checkbox" className="form-checkbox peer" />
+          <span className="text-sm">Intent detection enabled</span>
+        </label>
+
+        {/* Trigger keyword input (only show when peer is checked — simulate later) */}
+        <div>
+          <label className="block text-sm text-gray-600 mb-1">Trigger keyword (optional):</label>
+          <input
+            type="text"
+            className="w-full p-2 border rounded-md text-sm"
+            placeholder="INFO"
+          />
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
 
       <section className="bg-white p-6 rounded-lg shadow-md mb-8">
         <h2 className="text-2xl font-semibold mb-4">📬 Recent Comments</h2>
