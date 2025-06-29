@@ -15,25 +15,6 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-
-    // ✅ Classify intent using simple logic
-    const commentText = body.comment.toLowerCase();
-    let intent: string = "generic";
-
-    if (
-      /price|available|dm me|send info|how much|interested/.test(commentText)
-    ) {
-      intent = "interested";
-    } else if (
-      /where|hoa|when|built|lot|area|square footage/.test(commentText)
-    ) {
-      intent = "question";
-    } else if (
-      /ugly|scam|spam|promotion/.test(commentText)
-    ) {
-      intent = "negative";
-    }
-
     const newComment = await prisma.comment.create({
       data: {
         name: body.name,
@@ -41,7 +22,7 @@ export async function POST(req: Request) {
         timestamp: body.timestamp,
         isInterested: body.isInterested ?? false,
         repliedText: body.repliedText ?? null,
-        intent: intent, // ✅ Save detected intent
+        intent: body.intent ?? "generic", // ✅ Fallback if missing
       },
     });
 
