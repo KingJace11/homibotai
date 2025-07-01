@@ -1,4 +1,8 @@
+import { useState } from "react";
+
 export default function AccountSettingsPage() {
+  const [profilePicPreview, setProfilePicPreview] = useState<string | null>(null);
+
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
       <h1 className="text-3xl font-bold mb-4">Account Settings</h1>
@@ -11,7 +15,29 @@ export default function AccountSettingsPage() {
           <input className="w-full p-2 border rounded" placeholder="Email Address" disabled />
           <input className="w-full p-2 border rounded" placeholder="Phone Number" />
           <input className="w-full p-2 border rounded" placeholder="Business Name" />
-          <input type="file" className="w-full" />
+
+          <div className="mb-4">
+            <label className="block font-medium mb-1">Profile Picture</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  const url = URL.createObjectURL(file);
+                  setProfilePicPreview(url);
+                }
+              }}
+              className="block w-full"
+            />
+            {profilePicPreview && (
+              <img
+                src={profilePicPreview}
+                alt="Profile Preview"
+                className="mt-2 h-20 w-20 rounded-full object-cover border"
+              />
+            )}
+          </div>
         </form>
       </section>
 
