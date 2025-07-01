@@ -1,7 +1,7 @@
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 
 export const authOptions: AuthOptions = {
@@ -17,16 +17,10 @@ export const authOptions: AuthOptions = {
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
-  callbacks: {
-    async session({ session, user }) {
-      // Add user ID to the session object
-      if (session.user) {
-        session.user.id = user.id;
-      }
-      return session;
-    },
-  },
   session: {
     strategy: "database",
+  },
+  pages: {
+    signIn: "/signin",
   },
 };
