@@ -1,4 +1,5 @@
 import '../globals.css';
+import Link from 'next/link';
 import SessionWrapper from './SessionWrapper';
 
 export const metadata = {
@@ -9,8 +10,18 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>
-        <SessionWrapper>{children}</SessionWrapper>
+      <body className="bg-gray-50">
+        <SessionWrapper>
+          <header className="bg-white shadow-md py-4 px-6 flex justify-between items-center">
+            <h1 className="text-xl font-semibold text-gray-800">🏠 HomiBot.ai</h1>
+            <nav>
+              <Link href="/account" className="text-blue-600 hover:underline">
+                Account Settings
+              </Link>
+            </nav>
+          </header>
+          <main className="p-6">{children}</main>
+        </SessionWrapper>
       </body>
     </html>
   );
